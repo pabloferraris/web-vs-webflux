@@ -1,5 +1,7 @@
 package com.example.webfluxserver
 
+import com.mercadolibre.restclient.RESTPool
+import com.mercadolibre.restclient.RestClient
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
+import reactor.core.publisher.Mono.fromFuture
 import reactor.core.publisher.Mono.fromSupplier
 import reactor.core.scheduler.Schedulers
 import java.util.function.Supplier
@@ -69,4 +72,34 @@ class ControllerBloqueante (private val okHttp: OkHttpClient = OkHttpClient()){
 
 	}
 
+}
+
+@RestController
+class MeliController (private val restClient: RestClient = buildRestClient()) {
+
+	@GetMapping("/restclient")
+	fun saludar(): Mono<String> = fromSupplier {
+		restClient.get("http://localhost:9000").string
+	}.publishOn(Schedulers.boundedElastic())
+
+	@GetMapping("/restclient-async")
+	fun saludarAsync(): Mono<String> = fromFuture {
+		restClient.asyncGet("http://localhost:9000")
+				.thenApply { it.string }
+	}.publishOn(Schedulers.boundedElastic())
+}
+
+fun buildRestClient(): RestClient {
+	val restPool: RESTPool = RESTPool.builder()
+			.withName("__default__")
+			.withSocketTimeout(3000)
+			.withConnectionTimeout(1000)
+			.withMaxPoolWait(500)
+			.withMaxPerRoute(200)
+			.withMaxTotal(200)
+			.build()
+	return RestClient.builder()
+			.disableDefault()
+			.withPool(restPool)
+			.build()
 }

@@ -19,6 +19,13 @@
 		<kotlin.version>1.4.21</kotlin.version>
 	</properties>
 
+	<repositories>
+		<repository>
+			<id>Fury</id>
+			<url>http://maven.artifacts.furycloud.io/repository/all</url>
+		</repository>
+	</repositories>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -58,6 +65,16 @@
 			<groupId>io.projectreactor</groupId>
 			<artifactId>reactor-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.mercadolibre.restclient</groupId>
+			<artifactId>meli-restclient-core</artifactId>
+			<version>0.3.52</version>
+		</dependency>
+		<dependency>
+			<groupId>com.mercadolibre.restclient</groupId>
+			<artifactId>meli-restclient-default</artifactId>
+			<version>0.3.52</version>
 		</dependency>
 	</dependencies>
 
